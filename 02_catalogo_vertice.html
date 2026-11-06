@@ -190,7 +190,8 @@ document.querySelectorAll('[data-gallery]').forEach(g=>{
 });
 </script><div class="modal-backdrop" id="product-modal"><div aria-modal="true" class="modal" role="dialog"><button aria-label="Cerrar" class="close" type="button">×</button><h2 id="modal-title"></h2><p id="modal-price"></p><form id="product-form"><div id="option-fields"></div><button class="primary" type="submit">AÑADIR AL CARRITO</button></form></div></div><div class="modal-backdrop" id="cart-modal"><div aria-modal="true" class="modal" role="dialog"><button aria-label="Cerrar" class="close" type="button">×</button><h2>Tu pedido</h2><div id="cart-lines"></div><div class="cart-total"><span>Subtotal</span><strong id="cart-total">0,00 €</strong></div><p>Los gastos de envío y el pago se confirman por Instagram.</p><form id="checkout-form"><label>Nombre</label><input name="customer" placeholder="Tu nombre" required=""/><label>Entrega</label><select id="delivery" name="delivery"><option value="Entrega en mano">Entrega en mano</option><option value="Envío a domicilio">Envío a domicilio</option></select><label>Método de pago</label><select id="payment-method" name="payment" required><option value="" disabled selected>Selecciona cómo quieres pagar</option><option value="Efectivo">Efectivo</option><option value="Bizum / transferencia">Bizum / transferencia</option></select><div hidden="" id="address-fields"><label>Dirección completa</label><input name="address" placeholder="Calle y número"/><label>Código postal</label><input name="postal" placeholder="Código postal"/><label>Ciudad</label><input name="city" placeholder="Ciudad"/></div><button class="primary" type="submit">CONTINUAR POR INSTAGRAM</button></form><div id="copy-instructions" class="copy-instructions" hidden><h3>Tu pedido está copiado</h3><p>Al abrir Instagram, entra en el chat de maca y pega el contenido del portapapeles en el campo del mensaje. Después, envíamelo.</p><button class="primary" id="open-instagram-chat" type="button">ABRIR INSTAGRAM</button></div></div></div><script>
 (()=>{
- const cart=[]; let current=null;
+ let cart=[]; try{cart=JSON.parse(localStorage.getItem('maca_cart')||'[]');if(!Array.isArray(cart))cart=[];}catch(e){cart=[];} let current=null;
+ const persistCart=()=>{try{localStorage.setItem('maca_cart',JSON.stringify(cart));}catch(e){}};
  const $=s=>document.querySelector(s), euro=n=>Number(n).toFixed(2).replace('.',',')+' €';
  const productModal=$('#product-modal'), cartModal=$('#cart-modal');
  if(!productModal||!cartModal) return;
@@ -226,8 +227,9 @@ document.querySelectorAll('[data-gallery]').forEach(g=>{
    const qty=document.createElement('input');qty.type='number';qty.min='1';qty.value=it.qty;qty.dataset.qty=i;qty.style.width='75px';qty.style.padding='6px';
    d.append(title,price,remove,small,label,qty);lines.append(d);
   });
-  $('#cart-total').textContent=euro(total);$('#cart-count').textContent=cart.reduce((sum,x)=>sum+x.qty,0);
+  $('#cart-total').textContent=euro(total);$('#cart-count').textContent=cart.reduce((sum,x)=>sum+x.qty,0);persistCart();
  }
+ renderCart();
  function handleAction(e){
   const target=e.target instanceof Element?e.target:null;if(!target)return;
   const add=target.closest('.add-product'); if(add){e.preventDefault();openProduct(add);return;}
