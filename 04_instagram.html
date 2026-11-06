@@ -40,6 +40,66 @@ header{background:var(--cream)!important;box-shadow:0 1px 0 #d6cbbb}
 header .logo{width:190px;height:96px;object-fit:cover;object-position:center;mix-blend-mode:multiply;max-width:none;max-height:none}
 @media(max-width:700px){header .logo{width:150px;height:76px;max-width:none;max-height:none}}
 </style>
+
+<!-- maca: Google Analytics 4 (solo tras consentimiento analítico) -->
+<script>
+(function() {
+  const GA_ID = 'G-3GFSFT8KEW';
+  const CONSENT_KEY = 'maca_analytics_consent';
+  function loadAnalytics() {
+    if (window.__macaGaLoaded) return;
+    window.__macaGaLoaded = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){dataLayer.push(arguments);};
+    gtag('js', new Date());
+    gtag('config', GA_ID);
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(script);
+  }
+  function saveConsent(value) {
+    try { localStorage.setItem(CONSENT_KEY, value); } catch(e) {}
+    const banner = document.getElementById('maca-cookie-banner');
+    if (banner) banner.remove();
+    if (value === 'accepted') loadAnalytics();
+  }
+  window.macaCookieChoice = saveConsent;
+  let choice = null;
+  try { choice = localStorage.getItem(CONSENT_KEY); } catch(e) {}
+  if (choice === 'accepted') loadAnalytics();
+  document.addEventListener('DOMContentLoaded', function() {
+    if (choice === 'accepted' || choice === 'rejected') return;
+    if (document.getElementById('maca-cookie-banner')) return;
+    const banner = document.createElement('section');
+    banner.id = 'maca-cookie-banner';
+    banner.setAttribute('role', 'dialog');
+    banner.setAttribute('aria-label', 'Preferencias de cookies');
+    banner.innerHTML = `
+      <div class="maca-cookie-copy">
+        <strong>Tu privacidad importa</strong>
+        <p>Utilizo cookies analíticas de Google Analytics para conocer cómo se utiliza maca y mejorar la web. Puedes aceptarlas o rechazarlas.</p>
+      </div>
+      <div class="maca-cookie-actions">
+        <button type="button" class="maca-cookie-reject">Rechazar</button>
+        <button type="button" class="maca-cookie-accept">Aceptar estadísticas</button>
+      </div>`;
+    document.body.appendChild(banner);
+    banner.querySelector('.maca-cookie-reject').addEventListener('click', function(){ saveConsent('rejected'); });
+    banner.querySelector('.maca-cookie-accept').addEventListener('click', function(){ saveConsent('accepted'); });
+  });
+})();
+</script>
+<style>
+#maca-cookie-banner{position:fixed;z-index:99999;left:20px;right:20px;bottom:18px;max-width:920px;margin:0 auto;padding:18px 20px;background:#f4f0e8;color:#09254b;border:1px solid #d8cdbd;box-shadow:0 8px 30px rgba(9,37,75,.16);display:flex;align-items:center;justify-content:space-between;gap:20px;font-family:Arial,sans-serif}
+#maca-cookie-banner .maca-cookie-copy{flex:1;min-width:0}
+#maca-cookie-banner strong{font-family:Georgia,serif;font-size:18px;font-weight:normal}
+#maca-cookie-banner p{margin:6px 0 0;font-size:13px;line-height:1.5}
+#maca-cookie-banner .maca-cookie-actions{display:flex;gap:8px;flex-wrap:wrap}
+#maca-cookie-banner button{border:1px solid #09254b;background:transparent;color:#09254b;padding:10px 14px;font-size:12px;letter-spacing:.04em;cursor:pointer}
+#maca-cookie-banner .maca-cookie-accept{background:#09254b;color:#f4f0e8}
+@media(max-width:650px){#maca-cookie-banner{left:10px;right:10px;bottom:10px;padding:15px;display:block}#maca-cookie-banner .maca-cookie-actions{margin-top:12px}#maca-cookie-banner button{flex:1}}
+</style>
 </head>
 <body>
 <header>
