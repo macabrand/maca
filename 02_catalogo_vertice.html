@@ -241,7 +241,15 @@ document.querySelectorAll('[data-gallery]').forEach(g=>{
 
  $('#product-form').addEventListener('submit',e=>{e.preventDefault();if(!current)return;const data=Object.fromEntries(new FormData(e.target));cart.push({...current,options:data,qty:1});closeAll();renderCart();cartModal.classList.add('open');});
  $('#cart-lines').addEventListener('change',e=>{if(e.target.matches('[data-qty]')){const i=Number(e.target.dataset.qty);cart[i].qty=Math.max(1,parseInt(e.target.value,10)||1);renderCart();}});
- $('#delivery').addEventListener('change',e=>{const address=$('#address-fields');address.hidden=e.target.value!=='Envío a domicilio';address.querySelectorAll('input').forEach(i=>i.required=!address.hidden)});
+ const deliverySelect=$('#delivery'),paymentSelect=$('#payment-method');
+ const cashOption=[...paymentSelect.options].find(o=>o.value==='Efectivo');
+ function syncPaymentOptions(){
+  const shipping=deliverySelect.value==='Envío a domicilio';
+  cashOption.hidden=shipping;cashOption.disabled=shipping;
+  if(shipping&&paymentSelect.value==='Efectivo')paymentSelect.value='';
+  const address=$('#address-fields');address.hidden=!shipping;address.querySelectorAll('input').forEach(i=>i.required=shipping);
+ }
+ deliverySelect.addEventListener('change',syncPaymentOptions);syncPaymentOptions();
  $('#checkout-form').addEventListener('submit',e=>{
   e.preventDefault();if(!cart.length){alert('Añade algún producto al carrito.');return;}
   const f=Object.fromEntries(new FormData(e.target));
